@@ -31,7 +31,7 @@
     <!-- Add your actions here -->
     <action id="PxLogout.LogoutAction" class="com.hiccup.pxlogout.LogoutAction" text="Logout" description="注销账号设备绑定">
       <add-to-group group-id="EditMenu" anchor="first"/>
-      <keyboard-shortcut keymap="$default" first-keystroke="shift ctrl O"/>
+      <keyboard-shortcut keymap="$default" first-keystroke="ctrl shift O"/>
     </action>
   </actions>
 

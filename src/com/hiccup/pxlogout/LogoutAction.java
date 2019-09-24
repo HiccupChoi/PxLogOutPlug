@@ -2,11 +2,9 @@ package com.hiccup.pxlogout;
 
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.PlatformDataKeys;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.DialogBuilder;
-import com.intellij.openapi.ui.Messages;
-import com.intellij.psi.PsiFile;
+import com.intellij.vcs.log.ui.frame.MainFrame;
+
+import java.awt.*;
 
 /**
  * @Author: Hiccup
@@ -16,24 +14,22 @@ public class LogoutAction extends AnAction {
 
     @Override
     public void actionPerformed(AnActionEvent e) {
-        Project project = e.getData(PlatformDataKeys.PROJECT);
-        DialogBuilder dialogBuilder = new DialogBuilder(project);
-        Messages.showInputDialog(
-                project,
-                "What is your name?",
-                "Input your name",
-                Messages.getQuestionIcon());
+        PxLogOutDialog dialog = new PxLogOutDialog();
+
+        //定义工具包
+        Toolkit kit = Toolkit.getDefaultToolkit();
+        //获取屏幕的尺寸
+        Dimension screenSize = kit.getScreenSize();
+        //获取屏幕的宽
+        int screenWidth = screenSize.width;
+        //获取屏幕的高
+        int screenHeight = screenSize.height;
+        //设置窗口居中显示
+        dialog.setLocation(screenWidth/2 - 230, screenHeight/2- 124);
+        dialog.pack();
+        dialog.setVisible(true);
+        System.exit(0);
     }
 
-    /**
-     * 显示提示对话框
-     *
-     * @param file
-     * @param prefix
-     * @param project
-     */
-    private void showHintDialog(PsiFile file, String prefix, Project project) {
-
-    }
 
 }
