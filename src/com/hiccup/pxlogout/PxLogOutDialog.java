@@ -78,18 +78,39 @@ public class PxLogOutDialog extends JDialog {
 
         LogOutService logOutService = new LogOutService(serviceAddress, name, password, version);
         try {
-            String json = logOutService.getURLContent();
-            JsonObject jsonObject = JsonObject.parse(json);
-            boolean success = jsonObject.getBooleanValue("success");
-            if (success){
-                errorhint.setForeground(new Color(0, 178, 0));
-                errorhint.setText("注销成功");
+            if (version.equals("2.41")){
+                String json = LogOutSocket.doLogOut(serviceAddress, name, password, version);
+                JsonObject jsonObject = JsonObject.parse(json);
+                boolean success = jsonObject.getBooleanValue("success");
+                String code = jsonObject.getString("code");
+                String errorCode = jsonObject.getString("errorCode");
+                if (success || (code.equals("200") && errorCode.equals("0"))){
+                    errorhint.setForeground(new Color(0, 178, 0));
+                    errorhint.setText("注销成功");
+                } else {
+                    errorhint.setForeground(new Color(187, 0, 10));
+                    String errMsg = jsonObject.getString("errorMsg");
+                    errorhint.setText(errMsg);
+                }
             } else {
-                errorhint.setForeground(new Color(187, 0, 10));
-                String errMsg = jsonObject.getString("errorMsg");
-                int errorIndex = errMsg.indexOf("errorMsg");
-                errMsg = errMsg.substring(errorIndex + 9);
-                errorhint.setText(errMsg);
+                JsonObject argObject = new JsonObject();
+                argObject.put("server", serviceAddress);
+                argObject.put("name", name);
+                argObject.put("password", password);
+                argObject.put("version", version);
+                String json = logOutService.getURLContent(argObject.toString());
+                JsonObject jsonObject = JsonObject.parse(json);
+                boolean success = jsonObject.getBooleanValue("success");
+                if (success){
+                    errorhint.setForeground(new Color(0, 178, 0));
+                    errorhint.setText("注销成功");
+                } else {
+                    errorhint.setForeground(new Color(187, 0, 10));
+                    String errMsg = jsonObject.getString("errorMsg");
+                    int errorIndex = errMsg.indexOf("errorMsg");
+                    errMsg = errMsg.substring(errorIndex + 9);
+                    errorhint.setText(errMsg);
+                }
             }
         } catch (Exception e) {
             errorhint.setText(e.getMessage());

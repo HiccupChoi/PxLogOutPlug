@@ -6,8 +6,12 @@ package com.hiccup.pxlogout;
  */
 public class Urls {
     /**
-     * 2.40版本以下注销地址
+     * 2.40以下版本注销地址
      */
-    public static final String OLD_URL_PATH = "http://tool.poscm.top:8080/logoutServer.do";
+    static final String OLD_URL_PATH = "http://tool.poscm.top:8080/logoutServer.do";
+    /**
+     * 2.40及以上版本注销地址
+     */
+    static final String NEW_URL_PATH = "/paris-pos/equipment-unbind/unbindPos";
 
 }
