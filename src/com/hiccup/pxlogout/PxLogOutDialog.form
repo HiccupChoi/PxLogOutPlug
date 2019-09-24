@@ -3,7 +3,7 @@
   <grid id="cbd77" binding="contentPane" layout-manager="GridLayoutManager" row-count="2" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="10" left="10" bottom="10" right="10"/>
     <constraints>
-      <xy x="48" y="54" width="476" height="279"/>
+      <xy x="48" y="54" width="476" height="315"/>
     </constraints>
     <properties/>
     <border type="none"/>
@@ -177,7 +177,7 @@
                   </component>
                 </children>
               </grid>
-              <grid id="48c2" binding="Version" layout-manager="GridLayoutManager" row-count="1" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+              <grid id="48c2" binding="Version" layout-manager="GridLayoutManager" row-count="1" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
                 <margin top="0" left="10" bottom="0" right="20"/>
                 <constraints>
                   <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
@@ -187,7 +187,7 @@
                 <children>
                   <component id="1a191" class="javax.swing.JLabel">
                     <constraints>
-                      <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false">
+                      <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false">
                         <minimum-size width="100" height="-1"/>
                         <preferred-size width="100" height="-1"/>
                         <maximum-size width="100" height="-1"/>
@@ -199,16 +199,26 @@
                       <text value="版本号："/>
                     </properties>
                   </component>
-                  <component id="4a738" class="javax.swing.JTextField" binding="versionField">
+                  <component id="a5243" class="javax.swing.JRadioButton" binding="oldVersionRadio">
                     <constraints>
-                      <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="0" fill="0" indent="0" use-parent-layout="false">
-                        <minimum-size width="300" height="-1"/>
-                        <preferred-size width="300" height="-1"/>
-                        <maximum-size width="300" height="-1"/>
-                      </grid>
+                      <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
                     </constraints>
                     <properties>
-                      <font name="Consolas" size="16"/>
+                      <horizontalAlignment value="10"/>
+                      <horizontalTextPosition value="4"/>
+                      <selected value="true"/>
+                      <text value="2.40以下"/>
+                      <verticalAlignment value="0"/>
+                      <verticalTextPosition value="0"/>
+                    </properties>
+                  </component>
+                  <component id="ffa5e" class="javax.swing.JRadioButton" binding="newVersionRadio">
+                    <constraints>
+                      <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <selected value="false"/>
+                      <text value="2.40及以上"/>
                     </properties>
                   </component>
                 </children>
@@ -223,7 +233,7 @@
             <properties/>
             <border type="none"/>
             <children>
-              <component id="b3951" class="javax.swing.JLabel" binding="errorhint">
+              <component id="b3951" class="javax.swing.JLabel" binding="errorHint">
                 <constraints>
                   <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
@@ -248,4 +258,10 @@
       </grid>
     </children>
   </grid>
+  <buttonGroups>
+    <group name="versionRadio">
+      <member id="a5243"/>
+      <member id="ffa5e"/>
+    </group>
+  </buttonGroups>
 </form>

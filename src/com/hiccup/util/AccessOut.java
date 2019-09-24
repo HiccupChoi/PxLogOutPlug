@@ -45,7 +45,7 @@ public class AccessOut extends OutputStream implements DataOutput, DataInput, IP
 //    private long useTime;
 //    private Exception ex;
     private static void init() {
-        aoPool = new DataPool<AccessOut>("AccessOut", true, new AccessOut[16]) {
+        aoPool = new DataPool<AccessOut>(true, new AccessOut[16]) {
             @Override
             protected AccessOut newInstance() {
                 return new AccessOut(1024, false);

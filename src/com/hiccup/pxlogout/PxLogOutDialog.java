@@ -1,17 +1,17 @@
 package com.hiccup.pxlogout;
 
-
-
-
 import com.hiccup.json.JsonObject;
+import com.intellij.ui.JBColor;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.net.SocketTimeoutException;
+import java.util.concurrent.TimeoutException;
 
 public class PxLogOutDialog extends JDialog {
     private JPanel contentPane;
@@ -24,16 +24,18 @@ public class PxLogOutDialog extends JDialog {
     private JPanel Service;
     private JComboBox ServiceComboBox;
     private JPanel Version;
-    private JTextField versionField;
-    private JLabel errorhint;
+    private JLabel errorHint;
+    private JRadioButton oldVersionRadio;
+    private JRadioButton newVersionRadio;
+    /**
+     * 是否是新版本注销
+     */
+    private boolean newVersion;
 
-    public PxLogOutDialog() {
+    PxLogOutDialog() {
         setContentPane(contentPane);
         setModal(true);
         getRootPane().setDefaultButton(buttonOK);
-
-
-        versionField.setDocument(new NumberTextField());
 
         buttonOK.addActionListener(e -> onOK());
 
@@ -49,71 +51,69 @@ public class PxLogOutDialog extends JDialog {
         });
 
         // call onCancel() on ESCAPE
-        contentPane.registerKeyboardAction(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                onCancel();
-            }
-        }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        contentPane.registerKeyboardAction(e -> onCancel(), KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
     }
 
     private void onOK() {
         String serviceAddress = (String) ServiceComboBox.getSelectedItem();
         String name = nameField.getText();
         if (name.isEmpty()){
-            errorhint.setText("用户名不能为空");
+            errorHint.setText("用户名不能为空");
             return;
         }
         String password = String.valueOf(passwordField.getPassword());
         if (password.isEmpty()){
-            errorhint.setText("密码不能为空");
+            errorHint.setText("密码不能为空");
             return;
         }
-        String version = versionField.getText();
-        if (version.isEmpty()){
-            errorhint.setText("版本号不能为空");
-            return;
-        }
-        System.out.println(serviceAddress + "  " + name + "  " + password + "  " +version);
+        oldVersionRadio.addItemListener(e -> newVersion = false);
+        newVersionRadio.addItemListener(e -> newVersion = true);
 
-        LogOutService logOutService = new LogOutService(serviceAddress, name, password, version);
+        Color rightColor = new JBColor(new Color(0, 255, 0), new Color(0, 150, 0));
+        Color errorColor = new JBColor(new Color(255, 0, 0), new Color(150, 0, 0));
         try {
-            if (version.equals("2.41")){
-                String json = LogOutSocket.doLogOut(serviceAddress, name, password, version);
+            if (newVersion){
+                String json = LogOutSocket.doLogOut(serviceAddress, name, password);
                 JsonObject jsonObject = JsonObject.parse(json);
+                if (jsonObject == null){
+                    errorHint.setForeground(errorColor);
+                    errorHint.setText(json);
+                }
                 boolean success = jsonObject.getBooleanValue("success");
                 String code = jsonObject.getString("code");
                 String errorCode = jsonObject.getString("errorCode");
                 if (success || (code.equals("200") && errorCode.equals("0"))){
-                    errorhint.setForeground(new Color(0, 178, 0));
-                    errorhint.setText("注销成功");
+                    errorHint.setForeground(rightColor);
+                    errorHint.setText("注销成功");
                 } else {
-                    errorhint.setForeground(new Color(187, 0, 10));
+                    errorHint.setForeground(errorColor);
                     String errMsg = jsonObject.getString("errorMsg");
-                    errorhint.setText(errMsg);
+                    errorHint.setText(errMsg);
                 }
             } else {
                 JsonObject argObject = new JsonObject();
                 argObject.put("server", serviceAddress);
                 argObject.put("name", name);
                 argObject.put("password", password);
-                argObject.put("version", version);
-                String json = logOutService.getURLContent(argObject.toString());
+                argObject.put("version", "2.30.02");
+                String json = LogOutService.getURLContent(argObject.toString());
                 JsonObject jsonObject = JsonObject.parse(json);
                 boolean success = jsonObject.getBooleanValue("success");
                 if (success){
-                    errorhint.setForeground(new Color(0, 178, 0));
-                    errorhint.setText("注销成功");
+                    errorHint.setForeground(rightColor);
+                    errorHint.setText("注销成功");
                 } else {
-                    errorhint.setForeground(new Color(187, 0, 10));
+                    errorHint.setForeground(errorColor);
                     String errMsg = jsonObject.getString("errorMsg");
                     int errorIndex = errMsg.indexOf("errorMsg");
                     errMsg = errMsg.substring(errorIndex + 9);
-                    errorhint.setText(errMsg);
+                    errorHint.setText(errMsg);
                 }
             }
+        } catch (SocketTimeoutException timeOutException){
+            errorHint.setText("链接超时！");
         } catch (Exception e) {
-            errorhint.setText(e.getMessage());
+            errorHint.setText(e.getMessage());
         }
 
 

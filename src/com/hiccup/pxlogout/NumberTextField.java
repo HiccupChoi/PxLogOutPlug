@@ -3,8 +3,11 @@ package com.hiccup.pxlogout;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.PlainDocument;
 
+/**
+ * 过滤只能输入数字以及小数点
+ */
 public class NumberTextField extends PlainDocument {
-    public NumberTextField() {
+    NumberTextField() {
         super();
     }
 

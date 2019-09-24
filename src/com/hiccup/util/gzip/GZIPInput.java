@@ -1,6 +1,7 @@
 package com.hiccup.util.gzip;
 
 import com.hiccup.tools.IPool;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.ByteArrayInputStream;
 import java.io.EOFException;
@@ -33,7 +34,7 @@ public class GZIPInput extends InputStream implements IPool {
     /**
      * Indicates end of input stream.
      */
-    protected boolean eos;
+    private boolean eos;
 
     /**
      * Decompressor for this stream.
@@ -43,12 +44,12 @@ public class GZIPInput extends InputStream implements IPool {
     /**
      * Input buffer for decompression.
      */
-    protected byte[] buf;
+    private byte[] buf;
 
     /**
      * Length of input buffer.
      */
-    protected int len;
+    private int len;
 
     private boolean closed = false;
 
@@ -59,7 +60,7 @@ public class GZIPInput extends InputStream implements IPool {
     
     private volatile boolean busy = false;
 
-    public GZIPInput() {
+    GZIPInput() {
         buf = new byte[1024];
         inf = new Inflater(true);
     }
@@ -71,11 +72,7 @@ public class GZIPInput extends InputStream implements IPool {
         inf = new Inflater(true);
     }
 
-    public InputStream getIn() {
-        return in;
-    }
-
-    public void setIn(InputStream in) throws IOException {
+    void setIn(InputStream in) throws IOException {
         this.in = in;
         readHeader(in);
         eos = false;
@@ -201,7 +198,7 @@ public class GZIPInput extends InputStream implements IPool {
     private void skipBytes(InputStream in, int n) throws IOException {
         while (n > 0)
         {
-            int readLen = in.read(buf, 0, n < buf.length ? n : buf.length);
+            int readLen = in.read(buf, 0, Math.min(n, buf.length));
             if (readLen == -1)
             {
                 throw new EOFException();
@@ -223,7 +220,7 @@ public class GZIPInput extends InputStream implements IPool {
      */
     private int readUShort(InputStream in) throws IOException {
         int b = readUByte(in);
-        return ((int) readUByte(in) << 8) | b;
+        return (readUByte(in) << 8) | b;
     }
 
     /*
@@ -234,12 +231,6 @@ public class GZIPInput extends InputStream implements IPool {
         if (b == -1)
         {
             throw new EOFException();
-        }
-        if (b < -1 || b > 255)
-        {
-            // Report on this.in, not argument in; see read{Header, Trailer}.
-            throw new IOException(this.in.getClass().getName()
-                    + ".read() returned value out of range -1..255: " + b);
         }
         return b;
     }
@@ -280,7 +271,7 @@ public class GZIPInput extends InputStream implements IPool {
      *
      */
     @Override
-    public int read(byte[] buf, int off, int len) throws IOException {
+    public int read(@NotNull byte[] buf, int off, int len) throws IOException {
         ensureOpen();
         if (eos)
         {
@@ -320,7 +311,7 @@ public class GZIPInput extends InputStream implements IPool {
      * @exception ZipException if a ZIP format error has occurred
      * @exception IOException if an I/O error has occurred
      */
-    public int readInf(byte[] b, int off, int len) throws IOException {
+    private int readInf(byte[] b, int off, int len) throws IOException {
         if (b == null)
         {
             throw new NullPointerException();
@@ -358,7 +349,7 @@ public class GZIPInput extends InputStream implements IPool {
      *
      * @exception IOException if an I/O error has occurred
      */
-    protected void fill() throws IOException {
+    private void fill() throws IOException {
         ensureOpen();
         len = in.read(buf, 0, buf.length);
         if (len == -1)
@@ -379,7 +370,7 @@ public class GZIPInput extends InputStream implements IPool {
     }
 
     @Override
-    public int read() throws IOException {
+    public int read() {
         throw new RuntimeException("Not supported yet.");
     }
 

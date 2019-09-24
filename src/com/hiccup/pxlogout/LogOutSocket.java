@@ -7,25 +7,27 @@ import com.hiccup.util.Gzip;
 import com.hiccup.util.IOTool;
 import com.hiccup.util.NetTool;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 /**
  * @Author: Hiccup
  * @Date: 2019/9/24 4:44 下午
+ * 2.40及以上版本注销账号设备绑定用
  */
-public class LogOutSocket {
-    private final static String TAG = "PxLogout";
-    private final static Charset UTF8 = Charset.forName("UTF-8");
+class LogOutSocket {
+    private final static Charset UTF8 = StandardCharsets.UTF_8;
     private static String sessionId;
 
-    public static void doPost(OutputStream out, String host, String url, String json, String version, boolean toGz) {
+    private static void doPost(OutputStream out, String host, String url, String json, String version, boolean toGz) {
         byte[] data = json.getBytes(UTF8);
         int len = data.length;
         byte[] gz = Gzip.encrypt2(data).toByteArray();
-        String head = "";
+        String head;
         if (toGz){
             head = String.format("POST %s HTTP/1.1\r\n" +
                     "version: %s\r\n" +
@@ -35,9 +37,11 @@ public class LogOutSocket {
             try {
                 out.write(head.getBytes(UTF8));
                 out.write(gz);
-            } catch (Throwable e) {
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         } else {
+            // 调用接口需要在Cookie中添加sessionId信息
             head = String.format("POST %s HTTP/1.1\r\n" +
                     "version: %s\r\n" +
                     "Cookie:IRSSID=%s\n"+
@@ -47,27 +51,22 @@ public class LogOutSocket {
             try {
                 out.write(head.getBytes(UTF8));
                 out.write(data);
-            } catch (Throwable e) {
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
     }
 
-    public static void main(String[] args) {
-        String result = doLogOut("alitest.fanxiaojian.cn", "alixin", "xin123", "2.30.02");
-        System.out.println(result);
-    }
-
-    public static String doLogOut(String server, String name, String pwd, String version) {
-        String ip = server;
-        String loginUrl = "/irs-iface/om/inf/v1/login";
+    static String doLogOut(String server, String name, String pwd) {
+        String loginUrl = Urls.LOGIN_URL;
         String uploadUrl = Urls.NEW_URL_PATH;
-        Socket so = NetTool.connect(ip, 80, 10000);
+        Socket so = NetTool.connect(server, 80, 10000);
         if (so != null) {
             String json = String.format("{\"userName\":\"%s\",\"password\":\"%s\"}", name, pwd);
             try {
                 OutputStream out = so.getOutputStream();
                 InputStream in = so.getInputStream();
-                doPost(out, ip, loginUrl, json, version, true);
+                doPost(out, server, loginUrl, json, "2.41", true);
                 byte[] tmp = new byte[2048];
                 int readLen = in.read(tmp);
                 String data = new String(tmp, 0, readLen, UTF8);
@@ -88,7 +87,7 @@ public class LogOutSocket {
                                 if (!sessionId.isEmpty()) {
                                     json = String.format("{\"userId\":\"0\",\"equipmentType\":\"1\",\"macAddr\":[\"30-D9-D9-EE-AE-A9\"],\"sessionId\":\"%s\"}", sessionId);
 
-                                    doPost(out, ip, uploadUrl, json, version, false);
+                                    doPost(out, server, uploadUrl, json, "2.41", false);
                                     tmp = new byte[2048];
                                     readLen = in.read(tmp);
                                     data = new String(tmp, 0, readLen, UTF8);

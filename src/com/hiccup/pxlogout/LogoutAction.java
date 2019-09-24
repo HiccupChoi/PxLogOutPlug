@@ -2,18 +2,19 @@ package com.hiccup.pxlogout;
 
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.vcs.log.ui.frame.MainFrame;
+import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
 
 /**
  * @Author: Hiccup
  * @Date: 2019/9/23 20:42
+ * 插件启动类
  */
 public class LogoutAction extends AnAction {
 
     @Override
-    public void actionPerformed(AnActionEvent e) {
+    public void actionPerformed(@NotNull AnActionEvent e) {
         PxLogOutDialog dialog = new PxLogOutDialog();
 
         //定义工具包
@@ -29,6 +30,7 @@ public class LogoutAction extends AnAction {
         dialog.pack();
         dialog.setVisible(true);
         System.exit(0);
+
     }
 
 

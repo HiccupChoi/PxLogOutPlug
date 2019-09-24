@@ -49,7 +49,7 @@ public class GZIPOutput implements Closeable, IPool {
 
     private volatile boolean busy = false;
 
-    public GZIPOutput() {
+    GZIPOutput() {
         def = new Deflater(Deflater.DEFAULT_COMPRESSION, true);
         this.buf = new byte[1024];
     }
@@ -61,11 +61,7 @@ public class GZIPOutput implements Closeable, IPool {
         this.buf = new byte[1024];
     }
 
-    public OutputStream getOut() {
-        return out;
-    }
-
-    public final void setOut(OutputStream out) throws IOException {
+    final void setOut(OutputStream out) throws IOException {
         this.out = out;
         writeHeader();
         this.crc.reset();
@@ -96,7 +92,7 @@ public class GZIPOutput implements Closeable, IPool {
      * @param len the length of the data
      * @exception IOException if an I/O error has occurred
      */
-    public void writeDef(byte[] b, int off, int len) throws IOException {
+    private void writeDef(byte[] b, int off, int len) throws IOException {
         if (def.finished())
         {
             throw new IOException("write beyond end of stream");
@@ -123,7 +119,7 @@ public class GZIPOutput implements Closeable, IPool {
      *
      * @throws IOException if an I/O error has occurred
      */
-    protected void deflate() throws IOException {
+    private void deflate() throws IOException {
         int len = def.deflate(buf, 0, buf.length);
         if (len > 0)
         {
@@ -206,7 +202,7 @@ public class GZIPOutput implements Closeable, IPool {
      * Writes short integer in Intel byte order to a byte array, starting
      * at a given offset
      */
-    private void writeShort(int s, byte[] buf, int offset) throws IOException {
+    private void writeShort(int s, byte[] buf, int offset) {
         buf[offset] = (byte) (s & 0xff);
         buf[offset + 1] = (byte) ((s >> 8) & 0xff);
     }

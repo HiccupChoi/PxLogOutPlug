@@ -6,6 +6,7 @@ import com.hiccup.json.JsonObject;
 /**
  * 绑定信息（是否单机判断）
  */
+@SuppressWarnings("unused")
 public class BindingInfo{
 
     private static final String TAG = "BindingInfo";
@@ -83,6 +84,7 @@ public class BindingInfo{
             dout.put("userName", this.userName);
             return dout;
         } catch (Exception e) {
+            e.printStackTrace();
         }
         return null;
     }

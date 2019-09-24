@@ -12,19 +12,18 @@ import java.io.OutputStream;
  */
 public class GzipPool {
 
-    private final static String TAG = "GzipPool";
     private final DataPool<GZIPOutput> gout;
     private final DataPool<GZIPInput> gin;
     private boolean end = false;
 
     public GzipPool(int maxSize) {
-        gout = new DataPool<GZIPOutput>("GZIPOutput", false, new GZIPOutput[maxSize]) {
+        gout = new DataPool<GZIPOutput>(false, new GZIPOutput[maxSize]) {
             @Override
             protected GZIPOutput newInstance() {
                 return new GZIPOutput();
             }
         };
-        gin = new DataPool<GZIPInput>("GZIPInput", false, new GZIPInput[maxSize]) {
+        gin = new DataPool<GZIPInput>(false, new GZIPInput[maxSize]) {
             @Override
             protected GZIPInput newInstance() {
                 return new GZIPInput();
@@ -74,10 +73,5 @@ public class GzipPool {
         return null;
     }
 
-    public void close() {
-        end = true;
-        IOTool.safeClose(gout);
-        IOTool.safeClose(gin);
-    }
 
 }

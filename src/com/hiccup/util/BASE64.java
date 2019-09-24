@@ -28,12 +28,7 @@ public class BASE64 {
         return decode(base64, 0, base64.length());
     }
 
-    /**
-     *
-     * @param base64
-     * @return
-     */
-    public static byte[] decode(String base64, int off, int len) {
+    private static byte[] decode(String base64, int off, int len) {
         //	Log.d("BASE64", "base64=%s", base64);
         if (base64 == null || base64.isEmpty())
         {
@@ -90,11 +85,6 @@ public class BASE64 {
                                                 : 0;
     }
 
-    /**
-     *
-     * @param raw
-     * @return
-     */
     public static String encode(AccessOut ao) {
         if (ao == null)
         {
