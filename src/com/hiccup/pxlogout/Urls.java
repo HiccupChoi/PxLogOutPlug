@@ -4,11 +4,13 @@ package com.hiccup.pxlogout;
  * @Author: Hiccup
  * @Date: 2019/9/24 11:09 上午
  */
-class Urls {
+public class Urls {
+    static final String CODE = "code";
+    static final String SUCCESS_CODE = "200";
     /**
      * 2.40以下版本注销地址
      */
-    static final String OLD_URL_PATH = "http://tool.poscm.top:8080/logoutServer.do";
+    static final String OLD_URL_PATH = "/irs-iface/commons/cloudisk/upload";
     /**
      * 2.40及以上版本注销地址
      */

@@ -1,7 +1,7 @@
 <idea-plugin>
   <id>com.your.company.unique.plugin.id</id>
   <name>PxLogout</name>
-  <version>1.0</version>
+  <version>1.1</version>
   <vendor email="yuhuan184@163.com" url="http://www.hiccup.com">Hiccup</vendor>
 
   <description><![CDATA[

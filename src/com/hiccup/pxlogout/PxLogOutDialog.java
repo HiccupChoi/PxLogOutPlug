@@ -2,6 +2,7 @@ package com.hiccup.pxlogout;
 
 import com.hiccup.json.JsonObject;
 import com.intellij.ui.JBColor;
+import com.hiccup.util.Logger;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,6 +14,9 @@ import java.awt.event.WindowEvent;
 import java.net.SocketTimeoutException;
 import java.util.concurrent.TimeoutException;
 
+/**
+ * @author hiccup
+ */
 public class PxLogOutDialog extends JDialog {
     private JPanel contentPane;
     private JButton buttonOK;
@@ -41,6 +45,10 @@ public class PxLogOutDialog extends JDialog {
 
         buttonCancel.addActionListener(e -> onCancel());
 
+        oldVersionRadio.addItemListener(e -> newVersion = false);
+
+        newVersionRadio.addItemListener(e -> newVersion = true);
+
         // call onCancel() when cross is clicked
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         addWindowListener(new WindowAdapter() {
@@ -66,49 +74,24 @@ public class PxLogOutDialog extends JDialog {
             errorHint.setText("密码不能为空");
             return;
         }
-        oldVersionRadio.addItemListener(e -> newVersion = false);
-        newVersionRadio.addItemListener(e -> newVersion = true);
 
         Color rightColor = new JBColor(new Color(0, 255, 0), new Color(0, 150, 0));
         Color errorColor = new JBColor(new Color(255, 0, 0), new Color(150, 0, 0));
         try {
+            Result result;
             if (newVersion){
-                String json = LogOutSocket.doLogOut(serviceAddress, name, password);
-                JsonObject jsonObject = JsonObject.parse(json);
-                if (jsonObject == null){
-                    errorHint.setForeground(errorColor);
-                    errorHint.setText(json);
-                }
-                boolean success = jsonObject.getBooleanValue("success");
-                String code = jsonObject.getString("code");
-                String errorCode = jsonObject.getString("errorCode");
-                if (success || (code.equals("200") && errorCode.equals("0"))){
-                    errorHint.setForeground(rightColor);
-                    errorHint.setText("注销成功");
-                } else {
-                    errorHint.setForeground(errorColor);
-                    String errMsg = jsonObject.getString("errorMsg");
-                    errorHint.setText(errMsg);
-                }
+                result = LogOutSocket.doLogOut(serviceAddress, name, password, "2.41.00");
             } else {
-                JsonObject argObject = new JsonObject();
-                argObject.put("server", serviceAddress);
-                argObject.put("name", name);
-                argObject.put("password", password);
-                argObject.put("version", "2.30.02");
-                String json = LogOutService.getURLContent(argObject.toString());
-                JsonObject jsonObject = JsonObject.parse(json);
-                boolean success = jsonObject.getBooleanValue("success");
-                if (success){
-                    errorHint.setForeground(rightColor);
-                    errorHint.setText("注销成功");
-                } else {
-                    errorHint.setForeground(errorColor);
-                    String errMsg = jsonObject.getString("errorMsg");
-                    int errorIndex = errMsg.indexOf("errorMsg");
-                    errMsg = errMsg.substring(errorIndex + 9);
-                    errorHint.setText(errMsg);
-                }
+                result = OldLogoutSocket.doLogOut(serviceAddress, name, password, "2.30.02");
+            }
+            boolean success = result.success;
+            if (success){
+                errorHint.setForeground(new Color(0, 178, 0));
+                errorHint.setText("注销成功");
+            } else {
+                errorHint.setForeground(new Color(187, 0, 10));
+                String errMsg = result.message;
+                errorHint.setText(errMsg);
             }
         } catch (SocketTimeoutException timeOutException){
             errorHint.setText("链接超时！");
@@ -126,6 +109,7 @@ public class PxLogOutDialog extends JDialog {
 
     public static void main(String[] args) {
         PxLogOutDialog dialog = new PxLogOutDialog();
+        dialog.setTitle("注销登录");
         dialog.pack();
         dialog.setVisible(true);
         System.exit(0);

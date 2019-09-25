@@ -3,7 +3,7 @@
   <grid id="cbd77" binding="contentPane" layout-manager="GridLayoutManager" row-count="2" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="10" left="10" bottom="10" right="10"/>
     <constraints>
-      <xy x="48" y="54" width="476" height="315"/>
+      <xy x="48" y="54" width="476" height="279"/>
     </constraints>
     <properties/>
     <border type="none"/>
@@ -199,26 +199,23 @@
                       <text value="版本号："/>
                     </properties>
                   </component>
-                  <component id="a5243" class="javax.swing.JRadioButton" binding="oldVersionRadio">
+                  <component id="527fa" class="javax.swing.JRadioButton" binding="oldVersionRadio">
                     <constraints>
                       <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
                     </constraints>
                     <properties>
-                      <horizontalAlignment value="10"/>
-                      <horizontalTextPosition value="4"/>
+                      <font name="Courier" size="14"/>
                       <selected value="true"/>
-                      <text value="2.40以下"/>
-                      <verticalAlignment value="0"/>
-                      <verticalTextPosition value="0"/>
+                      <text value="40之前版本"/>
                     </properties>
                   </component>
-                  <component id="ffa5e" class="javax.swing.JRadioButton" binding="newVersionRadio">
+                  <component id="cb718" class="javax.swing.JRadioButton" binding="newVersionRadio">
                     <constraints>
                       <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                     </constraints>
                     <properties>
-                      <selected value="false"/>
-                      <text value="2.40及以上"/>
+                      <font name="Courier" size="14"/>
+                      <text value="40及之后版本"/>
                     </properties>
                   </component>
                 </children>
@@ -259,9 +256,9 @@
     </children>
   </grid>
   <buttonGroups>
-    <group name="versionRadio">
-      <member id="a5243"/>
-      <member id="ffa5e"/>
+    <group name="versionGroup">
+      <member id="cb718"/>
+      <member id="527fa"/>
     </group>
   </buttonGroups>
 </form>
