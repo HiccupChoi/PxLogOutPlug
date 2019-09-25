@@ -8,10 +8,13 @@ public class Urls {
     /**
      * 2.40以下版本注销地址
      */
-    static final String OLD_URL_PATH = "http://tool.poscm.top:8080/logoutServer.do";
+    static final String OLD_URL_PATH = "/irs-iface/commons/cloudisk/upload";
     /**
      * 2.40及以上版本注销地址
      */
     static final String NEW_URL_PATH = "/paris-pos/equipment-unbind/unbindPos";
-
+    /**
+     * 登录接口，获取urls
+     */
+    static final String LOGIN_URL = "/irs-iface/om/inf/v1/login";
 }

@@ -3,7 +3,6 @@ package com.hiccup.pxlogout;
 
 
 
-import com.hiccup.json.JsonObject;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,6 +12,9 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
+/**
+ * @author hiccup
+ */
 public class PxLogOutDialog extends JDialog {
     private JPanel contentPane;
     private JButton buttonOK;
@@ -24,16 +26,15 @@ public class PxLogOutDialog extends JDialog {
     private JPanel Service;
     private JComboBox ServiceComboBox;
     private JPanel Version;
-    private JTextField versionField;
-    private JLabel errorhint;
+    private JLabel errorHint;
+    private JRadioButton oldVersionRadio;
+    private JRadioButton newVersionRadio;
+    private boolean newVersion;
 
     public PxLogOutDialog() {
         setContentPane(contentPane);
         setModal(true);
         getRootPane().setDefaultButton(buttonOK);
-
-
-        versionField.setDocument(new NumberTextField());
 
         buttonOK.addActionListener(e -> onOK());
 
@@ -61,59 +62,38 @@ public class PxLogOutDialog extends JDialog {
         String serviceAddress = (String) ServiceComboBox.getSelectedItem();
         String name = nameField.getText();
         if (name.isEmpty()){
-            errorhint.setText("用户名不能为空");
+            errorHint.setText("用户名不能为空");
             return;
         }
         String password = String.valueOf(passwordField.getPassword());
         if (password.isEmpty()){
-            errorhint.setText("密码不能为空");
+            errorHint.setText("密码不能为空");
             return;
         }
-        String version = versionField.getText();
-        if (version.isEmpty()){
-            errorhint.setText("版本号不能为空");
-            return;
-        }
-        System.out.println(serviceAddress + "  " + name + "  " + password + "  " +version);
 
-        LogOutService logOutService = new LogOutService(serviceAddress, name, password, version);
+        oldVersionRadio.addItemListener(e -> newVersion = false);
+
+        newVersionRadio.addItemListener(e -> newVersion = true);
+
+
         try {
-            if (version.equals("2.41")){
-                String json = LogOutSocket.doLogOut(serviceAddress, name, password, version);
-                JsonObject jsonObject = JsonObject.parse(json);
-                boolean success = jsonObject.getBooleanValue("success");
-                String code = jsonObject.getString("code");
-                String errorCode = jsonObject.getString("errorCode");
-                if (success || (code.equals("200") && errorCode.equals("0"))){
-                    errorhint.setForeground(new Color(0, 178, 0));
-                    errorhint.setText("注销成功");
-                } else {
-                    errorhint.setForeground(new Color(187, 0, 10));
-                    String errMsg = jsonObject.getString("errorMsg");
-                    errorhint.setText(errMsg);
-                }
+            Result result;
+            if (newVersion){
+                result = LogOutSocket.doLogOut(serviceAddress, name, password, "1.0.0");
             } else {
-                JsonObject argObject = new JsonObject();
-                argObject.put("server", serviceAddress);
-                argObject.put("name", name);
-                argObject.put("password", password);
-                argObject.put("version", version);
-                String json = logOutService.getURLContent(argObject.toString());
-                JsonObject jsonObject = JsonObject.parse(json);
-                boolean success = jsonObject.getBooleanValue("success");
-                if (success){
-                    errorhint.setForeground(new Color(0, 178, 0));
-                    errorhint.setText("注销成功");
-                } else {
-                    errorhint.setForeground(new Color(187, 0, 10));
-                    String errMsg = jsonObject.getString("errorMsg");
-                    int errorIndex = errMsg.indexOf("errorMsg");
-                    errMsg = errMsg.substring(errorIndex + 9);
-                    errorhint.setText(errMsg);
-                }
+                result = OldLogoutSocket.doLogOut(serviceAddress, name, password, "2.30.02");
+            }
+            boolean success = result.success;
+            if (success){
+                errorHint.setForeground(new Color(0, 178, 0));
+                errorHint.setText("注销成功");
+            } else {
+                errorHint.setForeground(new Color(187, 0, 10));
+                String errMsg = result.message;
+                errorHint.setText(errMsg);
             }
         } catch (Exception e) {
-            errorhint.setText(e.getMessage());
+            errorHint.setText(e.getMessage());
         }
 
 

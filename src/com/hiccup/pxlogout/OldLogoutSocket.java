@@ -12,58 +12,42 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 /**
  * @Author: Hiccup
- * @Date: 2019/9/24 4:44 下午
+ * @Date: 2019/9/25 10:14 上午
  */
-public class LogOutSocket {
-    private final static String TAG = "PxLogout";
-    private final static Charset UTF8 = Charset.forName("UTF-8");
-    private static String sessionId;
+public class OldLogoutSocket {
 
-    private static void doPost(OutputStream out, String host, String url, String json, String version, boolean toGz) {
+    private final static Charset UTF8 = StandardCharsets.UTF_8;
+
+    private static void doPost(OutputStream out, String host, String url, String json, String version) {
         byte[] data = json.getBytes(UTF8);
         int len = data.length;
         byte[] gz = Gzip.encrypt2(data).toByteArray();
-        String head = "";
-        if (toGz){
-            head = String.format("POST %s HTTP/1.1\r\n" +
-                    "version: %s\r\n" +
-                    "Connection: keep-alive\r\nHost: %s\r\n" +
-                    "Content-Type:application/json;charset=UTF-8\r\n"+
-                    "Data-Length: %d\r\nContent-Length: %d\r\n\r\n", url, version, host, len, gz.length);
-            try {
-                out.write(head.getBytes(UTF8));
-                out.write(gz);
-            } catch (Throwable e) {
-            }
-        } else {
-            head = String.format("POST %s HTTP/1.1\r\n" +
-                    "version: %s\r\n" +
-                    "Cookie:IRSSID=%s\n"+
-                    "Connection: keep-alive\r\nHost: %s\r\n" +
-                    "Content-Type:application/json;charset=UTF-8\r\n"+
-                    "Data-Length: %d\r\nContent-Length: %d\r\n\r\n", url, version, sessionId, host, len, data.length);
-            try {
-                out.write(head.getBytes(UTF8));
-                out.write(data);
-            } catch (Throwable e) {
-            }
+        String head = String.format("POST %s HTTP/1.1\r\n" +
+                "version: %s" +
+                "Connection: keep-alive\r\nHost: %s\r\n" +
+                "Data-Length: %d\r\nContent-Length: %d\r\n\r\n", url, version, host, len, gz.length);
+        try {
+            out.write(head.getBytes(UTF8));
+            out.write(gz);
+        } catch (Throwable e) {
         }
     }
 
-    public static Result doLogOut(String server, String name, String pwd, String version) {
-        String ip = server;
-        String loginUrl = "/irs-iface/om/inf/v1/login";
-        String uploadUrl = Urls.NEW_URL_PATH;
-        Socket so = NetTool.connect(ip, 80, 10000);
+    static Result doLogOut(String server, String name, String pwd, String version) {
+        String loginUrl = Urls.LOGIN_URL;
+        String uploadUrl = Urls.OLD_URL_PATH;
+
+        Socket so = NetTool.connect(server, 80, 10000);
         if (so != null) {
             String json = String.format("{\"userName\":\"%s\",\"password\":\"%s\"}", name, pwd);
             try {
                 OutputStream out = so.getOutputStream();
                 InputStream in = so.getInputStream();
-                doPost(out, ip, loginUrl, json, version, true);
+                doPost(out, server, loginUrl, json, version);
                 byte[] tmp = new byte[2048];
                 int readLen = in.read(tmp);
                 String data = new String(tmp, 0, readLen, UTF8);
@@ -81,15 +65,14 @@ public class LogOutSocket {
                         if (err == 0) {
                             JsonObject dataObj = jsonObject.getJSONObject("data");
                             if (dataObj != null) {
-                                sessionId = dataObj.readUTF("sessionId");
+                                String sessionId = dataObj.readUTF("sessionId");
                                 if (!sessionId.isEmpty()) {
-                                    json = String.format("{\"userId\":\"0\",\"equipmentType\":\"1\",\"macAddr\":[\"30-D9-D9-EE-AE-A9\"],\"sessionId\":\"%s\"}", sessionId);
-
-                                    doPost(out, ip, uploadUrl, json, version, false);
+                                    json = String.format("{\"fileName\":\"/login/server_info\",\"file\":\"AA==\",\"sessionId\":\"%s\"}", sessionId);
+                                    doPost(out, server, uploadUrl, json, version);
                                     tmp = new byte[2048];
                                     readLen = in.read(tmp);
                                     data = new String(tmp, 0, readLen, UTF8);
-                                    if (data.contains(Boolean.TRUE.toString())) {
+                                    if(data.contains(Boolean.TRUE.toString())){
                                         Logger.info("账号：" + name + "注销成功");
                                         return new Result(true, "注销成功");
                                     }
@@ -98,10 +81,10 @@ public class LogOutSocket {
                                     return new Result(false, errorMessage);
                                 }
                             }
-                        } else {
+                        }else{
                             String errorMessage = jsonObject.getString("errorMsg");
-                            Logger.debug("账号：" + name + "登录失败，失败原因" + errorMessage);
-                            return new Result(false, errorMessage);
+                            Logger.debug("账号：" + name + "注销失败，失败原因" + errorMessage);
+                            return new Result(false, jsonObject.getString("errorMsg"));
                         }
                     }
                 }
@@ -114,4 +97,5 @@ public class LogOutSocket {
         Logger.error("Socker连接失败");
         return new Result(false, "连接云服务器失败，请确认服务器地址正确");
     }
+
 }
