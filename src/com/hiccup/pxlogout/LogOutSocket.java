@@ -11,6 +11,7 @@ import com.hiccup.util.NetTool;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.net.URL;
 import java.nio.charset.Charset;
 
 /**
@@ -89,7 +90,9 @@ public class LogOutSocket {
                                     tmp = new byte[2048];
                                     readLen = in.read(tmp);
                                     data = new String(tmp, 0, readLen, UTF8);
-                                    if (data.contains(Boolean.TRUE.toString())) {
+                                    data = data.substring(data.indexOf("{"), data.lastIndexOf("}") + 1);
+                                    jsonObject = JsonObject.parse(data);
+                                    if (jsonObject.getString(Urls.CODE).equals(Urls.SUCCESS_CODE)) {
                                         Logger.info("账号：" + name + "注销成功");
                                         return new Result(true, "注销成功");
                                     }

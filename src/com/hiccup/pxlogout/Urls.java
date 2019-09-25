@@ -5,6 +5,8 @@ package com.hiccup.pxlogout;
  * @Date: 2019/9/24 11:09 上午
  */
 public class Urls {
+    static final String CODE = "code";
+    static final String SUCCESS_CODE = "200";
     /**
      * 2.40以下版本注销地址
      */

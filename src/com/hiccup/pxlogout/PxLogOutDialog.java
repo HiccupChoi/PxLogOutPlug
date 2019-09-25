@@ -79,7 +79,7 @@ public class PxLogOutDialog extends JDialog {
         try {
             Result result;
             if (newVersion){
-                result = LogOutSocket.doLogOut(serviceAddress, name, password, "1.0.0");
+                result = LogOutSocket.doLogOut(serviceAddress, name, password, "2.41.00");
             } else {
                 result = OldLogoutSocket.doLogOut(serviceAddress, name, password, "2.30.02");
             }
@@ -108,6 +108,5 @@ public class PxLogOutDialog extends JDialog {
         PxLogOutDialog dialog = new PxLogOutDialog();
         dialog.pack();
         dialog.setVisible(true);
-        System.exit(0);
     }
 }
