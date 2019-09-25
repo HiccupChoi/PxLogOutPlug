@@ -1,18 +1,12 @@
 package com.hiccup.pxlogout;
 
-import com.hiccup.json.JsonObject;
 import com.intellij.ui.JBColor;
-import com.hiccup.util.Logger;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.net.SocketTimeoutException;
-import java.util.concurrent.TimeoutException;
 
 /**
  * @author hiccup
@@ -80,21 +74,19 @@ public class PxLogOutDialog extends JDialog {
         try {
             Result result;
             if (newVersion){
-                result = LogOutSocket.doLogOut(serviceAddress, name, password, "2.41.00");
+                result = LogOutSocket.doLogOut(serviceAddress, name, password);
             } else {
                 result = OldLogoutSocket.doLogOut(serviceAddress, name, password, "2.30.02");
             }
             boolean success = result.success;
             if (success){
-                errorHint.setForeground(new Color(0, 178, 0));
+                errorHint.setForeground(rightColor);
                 errorHint.setText("注销成功");
             } else {
-                errorHint.setForeground(new Color(187, 0, 10));
+                errorHint.setForeground(errorColor);
                 String errMsg = result.message;
                 errorHint.setText(errMsg);
             }
-        } catch (SocketTimeoutException timeOutException){
-            errorHint.setText("链接超时！");
         } catch (Exception e) {
             errorHint.setText(e.getMessage());
         }

@@ -67,7 +67,7 @@ class LogOutSocket {
             try {
                 OutputStream out = so.getOutputStream();
                 InputStream in = so.getInputStream();
-                doPost(out, server, loginUrl, json, "2.41", true);
+                doPost(out, server, loginUrl, json, "2.41.00", true);
                 byte[] tmp = new byte[2048];
                 int readLen = in.read(tmp);
                 String data = new String(tmp, 0, readLen, UTF8);
