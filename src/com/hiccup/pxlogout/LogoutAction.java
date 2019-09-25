@@ -28,7 +28,6 @@ public class LogoutAction extends AnAction {
         dialog.setLocation(screenWidth/2 - 230, screenHeight/2- 124);
         dialog.pack();
         dialog.setVisible(true);
-        System.exit(0);
     }
 
 
