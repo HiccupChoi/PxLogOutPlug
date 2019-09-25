@@ -26,6 +26,7 @@ public class LogoutAction extends AnAction {
         int screenHeight = screenSize.height;
         //设置窗口居中显示
         dialog.setLocation(screenWidth/2 - 230, screenHeight/2- 124);
+        dialog.setTitle("账号注销");
         dialog.pack();
         dialog.setVisible(true);
     }

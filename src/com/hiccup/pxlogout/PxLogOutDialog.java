@@ -1,5 +1,7 @@
 package com.hiccup.pxlogout;
 
+import com.hiccup.util.Logger;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -36,6 +38,10 @@ public class PxLogOutDialog extends JDialog {
 
         buttonCancel.addActionListener(e -> onCancel());
 
+        oldVersionRadio.addItemListener(e -> newVersion = false);
+
+        newVersionRadio.addItemListener(e -> newVersion = true);
+
         // call onCancel() when cross is clicked
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         addWindowListener(new WindowAdapter() {
@@ -66,10 +72,6 @@ public class PxLogOutDialog extends JDialog {
             errorHint.setText("密码不能为空");
             return;
         }
-
-        oldVersionRadio.addItemListener(e -> newVersion = false);
-
-        newVersionRadio.addItemListener(e -> newVersion = true);
 
 
         try {
@@ -102,7 +104,9 @@ public class PxLogOutDialog extends JDialog {
 
     public static void main(String[] args) {
         PxLogOutDialog dialog = new PxLogOutDialog();
+        dialog.setTitle("注销登录");
         dialog.pack();
         dialog.setVisible(true);
+        System.exit(0);
     }
 }
